@@ -50,11 +50,26 @@ func getAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(events)
 }
 
+func updateEvent(w http.ResponseWriter, r *http.Request) {
+	eventID := mux.Vars(r)["id"]
+	var EventStruct event
+
+	for i, singleEvent := range events {
+		if singleEvent.ID == eventID {
+			singleEvent.Title = EventStruct.Title
+			singleEvent.Description = EventStruct.Description
+			events = append(events[:i], singleEvent)
+			json.NewEncoder(w).Encode(singleEvent)
+		}
+	}
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	//router.HandleFunc("/", homeLink)
 	router.HandleFunc("/event", creatEvent)
 	router.HandleFunc("/event/{id}", getOneEvent)
 	router.HandleFunc("/", getAll)
+	router.HandleFunc("/event/{id}", updateEvent)
 	http.ListenAndServe(":8080", router)
 }
